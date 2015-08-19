@@ -1,0 +1,505 @@
+<!--
+
+# &lt;mercury-paginator&gt;
+
+>  A element providing a solution to paginate lists (Polymer 1.0 compatible).
+
+## Demo
+
+[Check it live!](https://github.com/bquarks/mercury-paginator)
+
+## Install
+
+Install the component using [Bower](http://bower.io/):
+
+```sh
+$ bower install mercury-paginator --save
+```
+
+Or [download as ZIP](https://github.com/bquarks/mercury-paginator/archive/master.zip).
+
+## Usage
+
+1. Import polyfill:
+
+    ```html
+    <script src="bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
+    ```
+
+2. Import custom element:
+
+    ```html
+    <link rel="import" href="bower_components/mercury-paginator/mercury-paginator.html">
+    ```
+
+3. Start using it!
+
+    ```html
+    <template is="dom-bind">
+
+        <mercury-paginator perpage="15" items="{{items}}"></mercury-paginator>
+
+        <div class="div-table">
+            <div class="head-row">
+                <div class="div-cell">Id</div>
+                <div class="div-cell">Item name</div>
+                <div class="div-cell">Description</div>
+            </div>
+
+            <template id="items" is="dom-repeat" items="{{items}}">
+                <div class="div-row">
+                    <div class="div-cell">{{item.id}}</div>
+                    <div class="div-cell">{{item.name}}</div>
+                    <div class="div-cell">{{item.description}}</div>
+                </div>
+            </template>
+        </div>
+
+    </template>
+    ```
+
+## Usage
+
+Specifies an array of elements to the component through the *items* property and set *perpage* property to a pagination number
+
+*You can use *iron-ajax* element to fetch data from server.
+
+
+## Development
+
+In order to run it locally you'll need to fetch some dependencies and a basic server setup.
+
+1. Install [bower](http://bower.io/) & [polyserve](https://npmjs.com/polyserve):
+
+    ```sh
+    $ npm install -g bower polyserve
+    ```
+
+2. Install local dependencies:
+
+    ```sh
+    $ bower install
+    ```
+
+3. Start development server and open `http://localhost:8080/components/my-repo/`.
+
+    ```sh
+    $ polyserve
+    ```
+
+## History
+
+For detailed changelog, check [Releases](https://github.com/jorguezz/mercury-paginator/releases).
+
+## License
+
+[MIT License](http://opensource.org/licenses/MIT)
+
+
+
+Example:
+
+    <mercury-paginator perpage="10" items="{{items}}"></mercury-paginator>
+
+    <div class="div-table">
+        <div class="head-row">
+            <div class="div-cell">Id</div>
+            <div class="div-cell">Item name</div>
+            <div class="div-cell">Description</div>
+        </div>
+
+        <template id="items" is="dom-repeat" items="{{items}}">
+            <div class="div-row">
+                <div class="div-cell">{{item.id}}</div>
+                <div class="div-cell">{{item.name}}</div>
+                <div class="div-cCell">{{item.description}}</div>
+            </div>
+        </template>
+    </div>
+
+@demo
+-->
+
+<link rel="import" href="../polymer/polymer.html">
+
+<dom-module id="mercury-paginator">
+    <link rel="import" type="css" href="mercury-paginator.css">
+
+  <template>
+        <div class="pagination">
+          <ul>
+            <template is="dom-if" if="{{showFirst}}">
+                <li><button on-tap="firstPage">First</button></li>
+            </template>
+
+                <li class$='{{disablePrev}}'>
+                  <button on-tap="prevPage">{{previous}}</button>
+                </li>
+
+            <template is="dom-repeat" items="{{currentRange}}">
+              <li class$="{{itemClass(item)}}" data-item="{{item}}" on-tap="setPage">
+                <button>{{pageNum(item)}}</button>
+              </li>
+            </template>
+
+            <li class$='{{disableNext}}'>
+              <button on-tap="nextPage">{{next}}</button>
+            </li>
+
+            <template is="dom-if" if="{{showLast}}">
+                <li><button on-tap="lastPage">Last</button></li>
+            </template>
+
+          </ul>
+      </div>
+
+  </template>
+
+</dom-module>
+
+<script>
+'use strict';
+
+  Polymer({
+
+    is: 'mercury-paginator',
+
+    properties: {
+        /**
+         * The `perpage` attribute defines the number
+         * of items to show per page
+         *
+         * @attribute perpage
+         * @type number
+         */
+        perpage: {
+            type: Number,
+            value: 10
+        },
+        /**
+         * The `currentpage` attribute specifies the
+         * current active page in view
+         *
+         * @attribute currentpage
+         * @type number
+         */
+        currentpage: {
+            type: Number,
+            value: 0
+        },
+        /**
+         * The `currentRange` property specifies the
+         * range of pages (e.g 1, 2, 3, 4, 5) to display
+         *
+         * @property currentRange
+         * @type array
+         */
+        currentRange: {
+            type: Array,
+            value: []
+        },
+
+        customTemplate: {
+            type: Boolean,
+            value: false
+        },
+        /**
+         * The `pageCount` specifies the number of paginated pages
+         *
+         * @property pageCount
+         * @type number
+         */
+        pageCount: {
+            type: Number,
+            value: 0
+        },
+        /**
+         * The `rangeSize` attribute specifies the total size * of the paginated range of items
+         *
+         * @attribute rangeSize
+         * @type number
+         */
+        rangeSize: {
+            type: Number,
+            value: 7
+        },
+        /**
+         * The `items` property is the cached instance of the model data for pagination
+         *
+         * @property items
+         * @type array
+         */
+        items: {
+            type: Array,
+            value: [],
+            notify: true
+        },
+        /**
+         * The `data` attribute is the complete set of data we
+         * wish to be paginated
+         *
+         * @attribute data
+         * @type array
+         */
+        data: {
+            type: Array,
+            value: [],
+            notify:true,
+            observer: '_dataChanged'
+        },
+
+        /**
+         * The `previous` attribute specifies the label
+         * for the Previous button
+         *
+         * @attribute previous
+         * @type string
+         */
+        previous: {
+            type: String,
+            value: '<'
+        },
+        /**
+         * The `next` attribute specifies the label
+         * for the Next button
+         *
+         * @attribute next
+         * @type string
+         */
+        next: {
+            type: String,
+            value: '>'
+        },
+
+        showFirst:{
+            type: Boolean,
+            value: false
+        },
+
+        showLast: {
+            type:Boolean,
+            value: false
+        },
+
+        disableNext:{
+            type: String,
+            computed: '_disableNextBtn(currentpage, pageCount)'
+        },
+
+        disablePrev: {
+            type: String,
+            computed: '_disablePrevBtn(currentpage, pageCount)'
+        },
+
+        adjacents: {
+            type: Number,
+            value: 3
+        }
+
+    },
+
+    observers: [
+        '_currentPageChanged(data, currentpage)',
+    ],
+
+    /**
+     * Disable prev buttom if currentpage page is 0
+     *
+     * @param {string} currentpage
+     * @method _disablePrevBtn
+     *
+     */
+    _disablePrevBtn: function(currentpage){
+        return currentpage === 0 ? 'disabled' : '';
+    },
+
+    /**
+     * Disable next buttom if currentpage page is equal pagecount
+     *
+     * @param {string} currentpage
+     * @method _disableNextBtn
+     *
+     */
+    _disableNextBtn: function(currentpage, pageCount){
+        return currentpage === pageCount ? 'disabled' : '';
+    },
+
+    itemClass: function(item){
+        return item === this.currentpage ? 'active' : '';
+    },
+
+
+    _dataChanged: function(){
+
+        // Update current range to account for items per page, range.
+        this.currentRange = this.range();
+
+        // Cache the total page count
+        this.pageCount =  this.getPageCount();
+
+        // Update model bound to UI with filtered range
+        // Source of truth for the component
+        this.set('items', this.filterPage());
+    },
+
+
+    pageNum: function(item){
+        return item + 1;
+    },
+
+
+    /**
+     * Navigate to the first page
+     * @method firstPage
+     */
+    firstPage: function () {
+        this.currentpage = 0;
+    },
+
+    /**
+     * Navigate to the last page
+     * @method lastPage
+     */
+    lastPage: function () {
+        this.currentpage = this.pageCount;
+    },
+
+    /**
+     * Called when navigating to the previous page
+     *
+     * @param {Object} page
+     * @event pager-previous
+     */
+
+    /**
+     * Navigate to the previous page
+     *
+     * @method prevPage
+     */
+    prevPage: function () {
+        if(this.currentpage > 0) {
+            this.currentpage--;
+            this.fire('pager-previous', { page: this.currentpage });
+        }
+    },
+
+    /**
+     * Called when navigating to the next page
+     *
+     * @param {Object} page
+     * @event pager-next
+     */
+
+    /**
+     * Navigate to the next page
+     *
+     * @method nextPage
+     */
+    nextPage: function () {
+        if ( this.currentpage < this.getPageCount() ) {
+            this.currentpage++;
+            this.fire('pager-next', { page: this.currentpage });
+        }
+    },
+
+    /**
+     * Set the currentpage  new model data
+     *
+     * @param {Object} e
+     * @method setPage
+     */
+    setPage: function (e) {
+        this.currentpage = parseInt(e.model.item, 10);
+    },
+
+
+    /**
+     * Get total pages
+     *
+     * @method getPageCount
+     */
+    getPageCount: function () {
+        return Math.ceil( this.data.length / this.perpage ) - 1;
+    },
+
+    /**
+     * Called when the current page changes
+     *
+     * @param {Object} page
+     * @event pager-change
+     */
+    _currentPageChanged: function () {
+        this.set('items', this.filterPage());
+        this.currentRange = this.range();
+        this.toogleActive();
+        this.fire('pager-change', { page: this.currentpage, data: this.items });
+    },
+
+    range: function () {
+        var paginations = [],
+            i,
+            pageCount = this.getPageCount();
+
+        if (pageCount-1 < this.rangeSize + (this.adjacents * 2))   //not enough pages to bother breaking it up
+        {
+            for (i = 0; i <= pageCount; i++)
+            {
+                paginations.push(i);
+            }
+
+        } else if(pageCount-1 > this.rangeSize + (this.adjacents * 2)){   //enough pages to hide some
+            //close to beginning; only hide later pages
+            if(this.currentpage < 1 + (this.adjacents * 2))
+            {
+                for (i=0; i<this.rangeSize; i++)
+                {
+                    paginations.push(i);
+                }
+            }
+            //in middle; hide some front and some back
+            else if(pageCount - (this.adjacents) > this.currentpage && this.currentpage > (this.adjacents * 2))
+            {
+                for (i = this.currentpage - this.adjacents; i <= this.currentpage + this.adjacents; i++)
+                {
+                    paginations.push(i);
+                }
+            } else{
+                //close to end; only hide early pages
+                for (i = pageCount - ((this.adjacents*2)); i <= pageCount; i++)
+                {
+                    paginations.push(i);
+                }
+            }
+        }
+
+        return paginations;
+    },
+
+    filterPage: function () {
+        return this.data.slice(this.currentpage * this.perpage, (this.currentpage * this.perpage) + this.perpage);
+    },
+
+    toogleActive: function(){
+        var list = document.querySelectorAll('.mercury-paginator');
+        this.clearActive(list);
+        this.applyActive(list);
+    },
+
+    clearActive: function(list){
+        for(var i=0; i<list.length; i++){
+            Polymer.dom(list[i]).classList.remove('active');
+        }
+    },
+
+    applyActive: function(list){
+        for(var i=0; i<list.length; i++){
+            if(list[i].dataItem === this.currentpage){
+                Polymer.dom(list[i]).classList.add('active');
+                break;
+            }
+        }
+    }
+
+  });
+
+</script>
