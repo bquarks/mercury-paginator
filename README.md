@@ -4,7 +4,7 @@
 
 ## Demo
 
-[Check it live!](https://github.com/bquarks/mercury-drop)
+[Check it live!](http://bquarks.github.io/mercury-paginator/components/mercury-paginator/)
 
 ## Install
 
