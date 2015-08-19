@@ -1,0 +1,109 @@
+<!doctype html>
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+    <title>mercury-paginator Demo</title>
+    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+    <link rel="import" href="../mercury-paginator.html">
+
+    <style>
+    .div-table {
+      display:table;
+      border: 1px solid #eeeeee;
+      border-collapse: collapse;
+      border-spacing: 0;
+      width: 800px;
+      margin: 0 auto;
+    }
+    .div-row {
+      display:table-row;
+      width:auto;
+      clear:both;
+      padding: 6px;
+      text-align: left;
+    }
+    .div-cell {
+      float:left;
+      display:table-column;
+      width:200px;
+    }
+    .head-row {
+      font-weight: bold;
+      text-align: left;
+    }
+  </style>
+
+  </head>
+  <body>
+
+    <div class="container">
+
+        <template is="dom-bind">
+
+            <mercury-paginator
+                perpage="50"
+                show-first=true
+                show-last=true
+                items="{{items}}">
+            </mercury-paginator>
+
+            <div class="div-table">
+                <div class="head-row">
+                    <div class="div-cell">Id</div>
+                    <div class="div-cell">Item name</div>
+                    <div class="div-cell">Description</div>
+                </div>
+
+                <template id="items" is="dom-repeat" items="{{items}}">
+                    <div class="div-row">
+                        <div class="div-cell">{{item.id}}</div>
+                        <div class="div-cell">{{item.name}}</div>
+                        <div class="div-cell">{{item.description}}</div>
+                    </div>
+                </template>
+            </div>
+
+
+        </template>
+
+    </div>
+
+  </body>
+
+  <!-- @demo -->
+  <script>
+    document.addEventListener('WebComponentsReady', function() {
+
+        // // Select the paginator to use with this element
+        var m = document.querySelector('mercury-paginator');
+
+        // // Create a model we will populate with data
+        var model = {
+            items: []
+        };
+
+        // As this is an example, populate some sample data inside
+        for (var i = 1; i <= 1599; i++) {
+            model.items.push({
+                id: i,
+                name: "Item "+ i,
+                description: "description " + i
+            });
+        }
+
+        // Pass as `data` the set of data we want the
+        // paginator to paginate
+        m.data = model.items;
+    });
+</script>
+</html>
