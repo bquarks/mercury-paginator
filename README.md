@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-# mercury-paginator
-A paginator for Polymer 1.0
-=======
 # &lt;mercury-paginator&gt;
 
 >  A Polymer element providing a solution to paginate lists (Polymer 1.0 compatible).
@@ -98,4 +94,3 @@ For detailed changelog, check [Releases](https://github.com/jorguezz/mercury-pag
 ## License
 
 [MIT License](http://opensource.org/licenses/MIT)
->>>>>>> Added polymer paginator 1.0 compatible
