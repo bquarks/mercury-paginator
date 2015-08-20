@@ -127,7 +127,7 @@ Example:
 
   <template>
         <div class="pagination">
-          <ul>
+          <ul id="paginationlist">
             <template is="dom-if" if="{{showFirst}}">
                 <li><button on-tap="firstPage">First</button></li>
             </template>
@@ -512,7 +512,8 @@ Example:
     },
 
     toogleActive: function(){
-        var list = document.querySelectorAll('.mercury-paginator');
+        //var list = document.querySelectorAll('.mercury-paginator');
+        var list = this.$.paginationlist.children;
         this.clearActive(list);
         this.applyActive(list);
     },
