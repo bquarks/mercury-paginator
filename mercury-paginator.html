@@ -151,6 +151,15 @@ Example:
             </template>
 
           </ul>
+
+          <template is="dom-if" if="{{showLegend}}">
+            <div class="pagination-legend">
+                    <span>{{currentPageLegend}}</span>
+                    <span> / </span>
+                    <span>{{pageCountLegend}}</span>
+            </div>
+          </template>
+
       </div>
 
   </template>
@@ -281,6 +290,11 @@ Example:
             value: false
         },
 
+        showLegend: {
+            type: Boolean,
+            value: false
+        },
+
         disableNext:{
             type: String,
             computed: '_disableNextBtn(currentpage, pageCount)'
@@ -289,6 +303,16 @@ Example:
         disablePrev: {
             type: String,
             computed: '_disablePrevBtn(currentpage, pageCount)'
+        },
+
+        pageCountLegend: {
+            type: String,
+            computed: '_pageCountLegend(pageCount)'
+        },
+
+        currentPageLegend: {
+            type: String,
+            computed: '_currentPageLegend(currentpage)'
         },
 
         adjacents: {
@@ -322,6 +346,14 @@ Example:
      */
     _disableNextBtn: function(currentpage, pageCount){
         return currentpage === pageCount ? 'disabled' : '';
+    },
+
+    _currentPageLegend: function(currentpage){
+        return currentpage + 1;
+    },
+
+    _pageCountLegend: function(pagecount){
+        return pagecount + 1;
     },
 
     itemClass: function(item){
