@@ -269,7 +269,8 @@ Example:
          */
         currentpage: {
             type: Number,
-            value: 0
+            value: 0,
+            notify:true
         },
         /**
          * The `currentRange` property specifies the
@@ -437,7 +438,6 @@ Example:
 
 
     _dataChanged: function(){
-
         // Update current range to account for items per page, range.
         this.currentRange = this.range();
 
@@ -446,7 +446,10 @@ Example:
 
         // Update model bound to UI with filtered range
         // Source of truth for the component
-        this.set('items', this.filterPage());
+        // Client Pagination
+        if(!this.count){
+            this.set('items', this.filterPage());
+        }
     },
 
 
@@ -526,7 +529,7 @@ Example:
      * @method getPageCount
      */
     getPageCount: function () {
-        return Math.ceil( this.data.length / this.perpage ) - 1;
+        return this.count ? Math.ceil( this.count / this.perpage ) - 1 : Math.ceil( this.data.length / this.perpage ) - 1;
     },
 
     /**
@@ -536,9 +539,13 @@ Example:
      * @event pager-change
      */
     _currentPageChanged: function () {
-        this.set('items', this.filterPage());
+        if(!this.count){
+            this.set('items', this.filterPage());
+        }
+
         this.currentRange = this.range();
         this.toogleActive();
+
         this.fire('pager-change', { page: this.currentpage, data: this.items });
     },
 
@@ -587,7 +594,6 @@ Example:
     },
 
     toogleActive: function(){
-        //var list = document.querySelectorAll('.mercury-paginator');
         var list = this.$.paginationlist.children;
         this.clearActive(list);
         this.applyActive(list);
