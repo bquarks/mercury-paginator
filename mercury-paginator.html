@@ -123,44 +123,119 @@ Example:
 <link rel="import" href="../polymer/polymer.html">
 
 <dom-module id="mercury-paginator">
-    <link rel="import" type="css" href="mercury-paginator.css">
 
-  <template>
-        <div class="pagination">
-          <ul id="paginationlist">
+    <template>
+
+        <style>
+            :host {
+                display: block;
+                position: relative;
+                text-align: var(--mercury-paginator-alignment, center);
+                @apply(--mercury-paginator);
+            }
+
+            .pagination {
+                display: inline-block;
+                list-style: none;
+                margin: var(--mercury-paginator-margin, 1rem);
+                padding: var(--mercury-paginator-padding, 1em);
+                vertical-align: middle;
+                word-spacing: -5px;
+            }
+
+            .pagination li {
+                display: inline-block;
+                font-size: var(--mercury-paginator-font-size, 1em);
+                vertical-align: middle;
+                word-spacing: normal;
+                @apply(--mercury-paginator-item);
+            }
+
+            .pagination li.active a {
+                background-color: var(--mercury-paginator-item-selected-bg-color, #2BA6CB);
+                color: var(--mercury-paginator-item-selected-color, white);
+                text-decoration: none;
+                @apply(--mercury-paginator-link-selected);
+            }
+
+            .pagination li.disabled a,
+            .pagination li.disabled a:hover {
+                background-color: var(--mercury-paginator-item-disabled-bg-color, #F5F5F5);
+                color: var(--mercury-paginator-item-disabled-bg-color, #CCCCCC);
+                cursor: default;
+                @apply(--mercury-paginator-link-disabled);
+            }
+
+            .pagination a {
+                background-color: var(--mercury-paginator-item-bg-color, white);
+                border: var(--mercury-paginator-item-border, 1px solid #EEEEEE);
+                color: var(--mercury-paginator-item-color, #2BA6CB);
+                cursor: pointer;
+                display: inline-block;
+                line-height: normal;
+                font-weight: var(--mercury-paginator-item-font-weight, normal);
+                padding: var(--mercury-paginator-item-padding, 0.5em 1em);
+                text-decoration: none;
+                -webkit-transition: var(--mercury-paginator-item-transition, background-color 0.3s ease-in);
+                transition: var(--mercury-paginator-item-transition, background-color 0.3s ease-in);
+                @apply(--mercury-paginator-link);
+            }
+
+
+            .pagination a:hover,
+            .pagination a:focus {
+                background-color: var(--mercury-paginator-link-hover-bg-color, #F5F5F5);
+                color: var(--mercury-paginator-link-hover-color, #2BA6CB);
+                @apply(--mercury-paginator-link-hover);
+            }
+
+            .pagination a:active {
+                background-color: var(--mercury-paginator-link-active-bg-color, #EEEEEE);
+                @apply(--mercury-paginator-link-active);
+            }
+
+            .pagination-legend {
+                color: var(--mercury-paginator-legend-color, #424242);
+                display: inline-block;
+                font-size: var(--mercury-paginator-legend-font-size, 1em);
+                vertical-align: middle;
+                @apply(--mercury-paginator-legend);
+            }
+        </style>
+
+        <ul id="paginationlist" class="pagination">
             <template is="dom-if" if="{{showFirst}}">
-                <li><button on-tap="firstPage">First</button></li>
+                <li><a on-tap="firstPage">First</a></li>
             </template>
 
                 <li class$='{{disablePrev}}'>
-                  <button on-tap="prevPage">{{previous}}</button>
+                    <a on-tap="prevPage">{{previous}}</a>
                 </li>
 
             <template is="dom-repeat" items="{{currentRange}}">
-              <li class$="{{itemClass(item)}}" data-item="{{item}}" on-tap="setPage">
-                <button>{{pageNum(item)}}</button>
-              </li>
+                <li class$="{{itemClass(item)}}" data-item="{{item}}" on-tap="setPage">
+                    <a>{{pageNum(item)}}</a>
+                </li>
             </template>
 
             <li class$='{{disableNext}}'>
-              <button on-tap="nextPage">{{next}}</button>
+                <a on-tap="nextPage">{{next}}</a>
             </li>
 
             <template is="dom-if" if="{{showLast}}">
-                <li><button on-tap="lastPage">Last</button></li>
+                <li><a on-tap="lastPage">Last</a></li>
             </template>
 
-          </ul>
+        </ul>
 
-          <template is="dom-if" if="{{showLegend}}">
+        <template is="dom-if" if="{{showLegend}}">
             <div class="pagination-legend">
-                    <span>{{currentPageLegend}}</span>
-                    <span> / </span>
-                    <span>{{pageCountLegend}}</span>
+                <span>{{currentPageLegend}}</span>
+                <span> / </span>
+                <span>{{pageCountLegend}}</span>
             </div>
-          </template>
+        </template>
 
-      </div>
 
   </template>
 
