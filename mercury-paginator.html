@@ -228,15 +228,6 @@ Example:
 
         </ul>
 
-        <template is="dom-if" if="{{showLegend}}">
-            <div class="pagination-legend">
-                <span>{{currentPageLegend}}</span>
-                <span> / </span>
-                <span>{{pageCountLegend}}</span>
-            </div>
-        </template>
-
-
   </template>
 
 </dom-module>
@@ -386,11 +377,6 @@ Example:
             computed: '_pageCountLegend(pageCount)'
         },
 
-        currentPageLegend: {
-            type: String,
-            computed: '_currentPageLegend(currentpage)'
-        },
-
         adjacents: {
             type: Number,
             value: 3
@@ -424,13 +410,6 @@ Example:
         return currentpage === pageCount ? 'disabled' : '';
     },
 
-    _currentPageLegend: function(currentpage){
-        return currentpage + 1;
-    },
-
-    _pageCountLegend: function(pagecount){
-        return pagecount + 1;
-    },
 
     itemClass: function(item){
         return item === this.currentpage ? 'active' : '';
@@ -546,7 +525,11 @@ Example:
         this.currentRange = this.range();
         this.toogleActive();
 
-        this.fire('pager-change', { page: this.currentpage, data: this.items });
+        this.fire('pager-change', {
+            page: this.currentpage,
+            pagesize: this.perpage,
+            data: this.items
+        });
     },
 
     range: function () {
