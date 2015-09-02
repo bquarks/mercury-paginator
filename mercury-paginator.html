@@ -194,13 +194,6 @@ Example:
                 @apply(--mercury-paginator-link-active);
             }
 
-            .pagination-legend {
-                color: var(--mercury-paginator-legend-color, #424242);
-                display: inline-block;
-                font-size: var(--mercury-paginator-legend-font-size, 1em);
-                vertical-align: middle;
-                @apply(--mercury-paginator-legend);
-            }
         </style>
 
         <ul id="paginationlist" class="pagination">
@@ -225,6 +218,8 @@ Example:
             <template is="dom-if" if="{{showLast}}">
                 <li><a on-tap="lastPage">Last</a></li>
             </template>
+
+            <content></content>
 
         </ul>
 
@@ -357,11 +352,6 @@ Example:
             value: false
         },
 
-        showLegend: {
-            type: Boolean,
-            value: false
-        },
-
         disableNext:{
             type: String,
             computed: '_disableNextBtn(currentpage, pageCount)'
@@ -370,11 +360,6 @@ Example:
         disablePrev: {
             type: String,
             computed: '_disablePrevBtn(currentpage, pageCount)'
-        },
-
-        pageCountLegend: {
-            type: String,
-            computed: '_pageCountLegend(pageCount)'
         },
 
         adjacents: {
