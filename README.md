@@ -1,10 +1,9 @@
 # &lt;mercury-paginator&gt;
 
->  A Polymer element providing a solution to paginate lists (Polymer 1.0 compatible).
+>  A Polymer element providing a solution to paginate lists.
 
 ## Demo
-
-[Check it live!](http://bquarks.github.io/mercury-paginator/components/mercury-paginator/)
+[Check it live!](http://bquarks.github.io/mercury-paginator/components/mercury-paginator/demo)
 
 ## Install
 
